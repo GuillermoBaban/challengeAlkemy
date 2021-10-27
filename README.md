@@ -1,8 +1,10 @@
 # React challenge for Alkemy
 
 [x] - Recomiendo hacer un git clone, o ir diractamente a https://challenge-alkemy.vercel.app/home, ya que en signin se hace una peticion de tipo POST a http://challenge-react.alkemy.org/ y como es http y no https google chrome lo detecta como malisioso y no devuelve la respuesta.
+/
 
 [x] - I recomend make a git clone or go to https://challenge-alkemy.vercel.app/home, because signin it makes a post type request to http://challenge-react.alkemy.org, and since it is a http and not https google chrome detects it as malicious and does not return the response.
+/
 
 # Getting Started with Create React App
 
