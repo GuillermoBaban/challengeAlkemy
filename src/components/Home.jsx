@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Row, ListGroup, Container } from "react-bootstrap";
-
+import { characterContext } from "../context/characterContext";
 import { Cards } from "./Cards";
 
 export const Home = () => {
+  const maxTeamCount = 3;
   const [goodCharacter, setGoodCharacter] = useState(0);
   const [badCharacter, setBadCharacter] = useState(0);
   const [characters, setCharacters] = useState([
@@ -14,8 +15,6 @@ export const Home = () => {
     { id: 4, value: "", sumPowers: 0, alignment: "", height: 0, weight: 0 },
     { id: 5, value: "", sumPowers: 0, alignment: "", height: 0, weight: 0 },
   ]);
-
-  const maxTeamCount = 3;
 
   const handleFetchResult = (id, result) => {
     let sum = 0;
@@ -34,8 +33,7 @@ export const Home = () => {
     newState[characterIndex].value = result;
 
     //sum PomerStats
-    for (const [key, value] of Object.entries(objP)) {
-      console.log(key, value);
+    for (const [, value] of Object.entries(objP)) {
       if (value !== "null") sum += parseInt(value);
     }
     newState[characterIndex].sumPowers = sum;
@@ -50,6 +48,7 @@ export const Home = () => {
       ? setGoodCharacter(goodCharacter + 1)
       : setBadCharacter(badCharacter + 1);
     newState[characterIndex].alignment = alignment;
+
     setCharacters(newState);
   };
 
@@ -187,19 +186,19 @@ export const Home = () => {
           </div>
         )}
       </div>
-      <Row xs={1} md={3} className="g-4">
-        {characters.map((card, index) => (
-          <Cards
-            goodCharacter={goodCharacter}
-            badCharacter={badCharacter}
-            key={index}
-            value={card.value}
-            sumPower={card.sumPowers}
-            onFetchResult={(result) => handleFetchResult(card.id, result)}
-            onDelete={() => handleDelete(card.id)}
-          />
-        ))}
-      </Row>
+      <characterContext.Provider value={{ goodCharacter, badCharacter }}>
+        <Row xs={1} md={3} className="g-4">
+          {characters.map((card, index) => (
+            <Cards
+              key={index}
+              value={card.value}
+              sumPower={card.sumPowers}
+              onFetchResult={(result) => handleFetchResult(card.id, result)}
+              onDelete={() => handleDelete(card.id)}
+            />
+          ))}
+        </Row>
+      </characterContext.Provider>
     </Container>
   );
 };

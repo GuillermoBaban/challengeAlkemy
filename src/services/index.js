@@ -1,9 +1,7 @@
 import axios from "axios";
-
 const API_KEY = process.env.REACT_APP_API_KEY;
 
 export async function passAndEmail(values) {
-  console.log();
   try {
     const response = await axios({
       url: "http://challenge-react.alkemy.org/",
@@ -18,7 +16,7 @@ export async function passAndEmail(values) {
     localStorage.setItem("token", token);
     return true;
   } catch (e) {
-    console.log(e);
+    return e.response.status;
   }
 }
 

@@ -1,4 +1,5 @@
 import { Modal, Button, ListGroup } from "react-bootstrap";
+import { v4 as uuid_v4 } from "uuid";
 
 export const ModalDetail = ({ show, onHide, value }) => {
   return (
@@ -17,12 +18,12 @@ export const ModalDetail = ({ show, onHide, value }) => {
           <ListGroup.Item>Name: {value.data.results[0].name}</ListGroup.Item>
           <ListGroup.Item>
             <p>Aliases :</p>
-            {value.data.results[0].biography.aliases.map((powers, index) =>
+            {value.data.results[0].biography.aliases.map((powers) =>
               powers === "-" ? (
                 "No aliases"
               ) : (
-                <ul key={index}>
-                  <li key={index}>{powers}</li>
+                <ul key={uuid_v4()}>
+                  <li key={uuid_v4()}>{powers}</li>
                 </ul>
               )
             )}

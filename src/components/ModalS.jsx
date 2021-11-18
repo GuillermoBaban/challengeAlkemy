@@ -1,15 +1,12 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Button, Modal, Form } from "react-bootstrap";
 import { Formik } from "formik";
 import { getMethod } from "../services/index";
+import { characterContext } from "../context/characterContext";
 
-export const ModalS = ({
-  show,
-  onHide,
-  onFetchResult,
-  goodCharacter,
-  badCharacter,
-}) => {
+export const ModalS = ({ show, onHide, onFetchResult }) => {
+  const { goodCharacter, badCharacter } = useContext(characterContext);
+
   const [isLoad, setIsLoad] = useState(false);
   const [notFound, setNotFound] = useState(false);
   const [goodTeamFull, setGoodTeamFull] = useState(false);
@@ -76,7 +73,6 @@ export const ModalS = ({
                 ) {
                   onFetchResult(response);
                 } else if (response.data.response === "error") {
-                  console.log(response);
                   setNotFound(true);
                 } else if (goodCharacter === 3) {
                   setGoodTeamFull(true);

@@ -1,9 +1,10 @@
 import { Form, Button } from "react-bootstrap";
-import { Formik } from "formik";
+import { ErrorMessage, Formik } from "formik";
 import { passAndEmail } from "../services/index";
 import { useHistory } from "react-router-dom";
-
+import { useState } from "react";
 export const Signin = () => {
+  const [incorretUser, setIncorrectUser] = useState(false);
   const history = useHistory();
   return (
     <div
@@ -35,19 +36,14 @@ export const Signin = () => {
           return errors;
         }}
         onSubmit={async (values, { resetForm }) => {
-          if (await passAndEmail(values)) {
+          if ((await passAndEmail(values)) !== 401) {
             history.push("/home");
+          } else {
+            setIncorrectUser(true);
           }
         }}
       >
-        {({
-          values,
-          touched,
-          errors,
-          handleSubmit,
-          handleChange,
-          handleBlur,
-        }) => (
+        {({ errors, handleSubmit, handleChange, handleBlur }) => (
           <Form
             className="w-50 square border border-2 p-3"
             onSubmit={handleSubmit}
@@ -61,14 +57,17 @@ export const Signin = () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
               />
-              {touched.email && errors.email && (
-                <div
-                  className="error text-danger mt-2"
-                  style={{ fontSize: 13 }}
-                >
-                  {errors.email}
-                </div>
-              )}
+              <ErrorMessage
+                name="email"
+                component={() => (
+                  <div
+                    className="error text-danger mt-2"
+                    style={{ fontSize: 13 }}
+                  >
+                    {errors.email}
+                  </div>
+                )}
+              />
               <Form.Text className="text-muted">
                 We'll never share your email with anyone else.
               </Form.Text>
@@ -82,15 +81,25 @@ export const Signin = () => {
                 onChange={handleChange}
                 onBlur={handleBlur}
               />
-              {touched.password && errors.password && (
-                <div
-                  className="error text-danger mt-2"
-                  style={{ fontSize: 13 }}
-                >
-                  {errors.password}
-                </div>
-              )}
+              <ErrorMessage
+                name="password"
+                component={() => (
+                  <div
+                    className="error text-danger mt-2"
+                    style={{ fontSize: 13 }}
+                  >
+                    {errors.password}
+                  </div>
+                )}
+              />
             </Form.Group>
+            {!incorretUser ? (
+              <div></div>
+            ) : (
+              <p className="error text-danger mt-2" style={{ fontSize: 13 }}>
+                User or password incorrect
+              </p>
+            )}
             <div className="text-center">
               <Button variant="primary" type="submit">
                 Signin
