@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { Button, Modal, Form } from "react-bootstrap";
+import { Button, Modal, Form, Spinner } from "react-bootstrap";
 import { Formik } from "formik";
 import { getMethod } from "../services/index";
 import { characterContext } from "../context/characterContext";
@@ -26,7 +26,7 @@ export const ModalS = ({ show, onHide, onFetchResult }) => {
           Close
         </Button>
       );
-    } else if (isLoad && notFound) {
+    } else if (!isLoad && notFound) {
       return <p>Name not Found</p>;
     } else if (isLoad && goodTeamFull) {
       return <p>The good team is full</p>;
@@ -55,6 +55,7 @@ export const ModalS = ({ show, onHide, onFetchResult }) => {
             return errors;
           }}
           onSubmit={({ name }) => {
+            setIsLoad(true);
             getMethod(name).then((response) => {
               try {
                 setNotFound(false);
@@ -66,20 +67,22 @@ export const ModalS = ({ show, onHide, onFetchResult }) => {
                   response.data.results[0].biography.alignment === "good"
                 ) {
                   onFetchResult(response);
+                  setIsLoad(false);
                 } else if (
                   badCharacter <= 2 &&
                   response.data.response === "success" &&
                   response.data.results[0].biography.alignment === "bad"
                 ) {
                   onFetchResult(response);
+                  setIsLoad(false);
                 } else if (response.data.response === "error") {
                   setNotFound(true);
+                  setIsLoad(false);
                 } else if (goodCharacter === 3) {
                   setGoodTeamFull(true);
                 } else if (badCharacter === 3) {
                   setBadTeamFull(true);
                 }
-                setIsLoad(true);
               } catch (e) {
                 console.log(e);
               }
@@ -120,6 +123,9 @@ export const ModalS = ({ show, onHide, onFetchResult }) => {
                 <Button variant="primary" type="submit">
                   Search
                 </Button>
+              </div>
+              <div className="text-center mt-3">
+                {isLoad ? <Spinner animation="border" /> : <p></p>}
               </div>
             </Form>
           )}
