@@ -1,39 +1,34 @@
-import { useState, useContext } from "react";
 import { Button, Modal, Form, Spinner } from "react-bootstrap";
 import { Formik } from "formik";
-import { getMethod } from "../services/index";
-import { characterContext } from "../context/characterContext";
+import { fetchCharacters } from "../store/slices/characters";
+import { useSelector, useDispatch } from "react-redux";
 
-export const ModalS = ({ show, onHide, onFetchResult }) => {
-  const { goodCharacter, badCharacter } = useContext(characterContext);
+export const ModalS = ({ show, onHide, cardId }) => {
+  const {
+    rootReducer: { character },
+  } = useSelector((state) => state);
 
-  const [isLoad, setIsLoad] = useState(false);
-  const [notFound, setNotFound] = useState(false);
-  const [goodTeamFull, setGoodTeamFull] = useState(false);
-  const [badTeamFull, setBadTeamFull] = useState(false);
+  const {
+    rootReducer: { spinner },
+  } = useSelector((state) => state);
 
-  //if not load and not notfound OK, else load and notFound not OK
-  const buttonClose = ({ isLoad, notFound, goodTeamFull, badTeamFull }) => {
-    if (isLoad && !notFound && !goodTeamFull && !badTeamFull) {
-      return (
-        <Button
-          variant="primary"
-          onClick={() => {
-            onHide();
-            setIsLoad(false);
-          }}
-        >
-          Close
-        </Button>
-      );
-    } else if (!isLoad && notFound) {
-      return <p>Name not Found</p>;
-    } else if (isLoad && goodTeamFull) {
-      return <p>The good team is full</p>;
-    } else if (isLoad && badTeamFull) {
-      return <p>The bad team is full</p>;
-    }
-  };
+  const {
+    rootReducer: { error },
+  } = useSelector((state) => state);
+
+  let fullGoodCharacter = false;
+
+  let fullBadCharacter = false;
+
+  const goodCharacters = character.filter(
+    (character) => character.alignment === "good" && character.value !== ""
+  );
+
+  const badCharacters = character.filter(
+    (character) => character.alignment === "bad" && character.value !== ""
+  );
+
+  const dispatch = useDispatch();
 
   return (
     <Modal show={show} onHide={onHide}>
@@ -55,38 +50,14 @@ export const ModalS = ({ show, onHide, onFetchResult }) => {
             return errors;
           }}
           onSubmit={({ name }) => {
-            setIsLoad(true);
-            getMethod(name).then((response) => {
-              try {
-                setNotFound(false);
-                setGoodTeamFull(false);
-                setBadTeamFull(false);
-                if (
-                  goodCharacter <= 2 &&
-                  response.data.response === "success" &&
-                  response.data.results[0].biography.alignment === "good"
-                ) {
-                  onFetchResult(response);
-                  setIsLoad(false);
-                } else if (
-                  badCharacter <= 2 &&
-                  response.data.response === "success" &&
-                  response.data.results[0].biography.alignment === "bad"
-                ) {
-                  onFetchResult(response);
-                  setIsLoad(false);
-                } else if (response.data.response === "error") {
-                  setNotFound(true);
-                  setIsLoad(false);
-                } else if (goodCharacter === 3) {
-                  setGoodTeamFull(true);
-                } else if (badCharacter === 3) {
-                  setBadTeamFull(true);
-                }
-              } catch (e) {
-                console.log(e);
-              }
-            });
+            if (goodCharacters.length === 3) {
+              fullGoodCharacter = true;
+            } else if (badCharacters.length === 3) {
+              fullBadCharacter = true;
+            }
+            dispatch(
+              fetchCharacters(name, cardId, fullGoodCharacter, fullBadCharacter)
+            );
           }}
         >
           {({
@@ -120,19 +91,38 @@ export const ModalS = ({ show, onHide, onFetchResult }) => {
                 )}
               </Form.Group>
               <div className="text-center">
-                <Button variant="primary" type="submit">
+                <div className="mb-3">
+                  {spinner ? <Spinner animation="border" /> : <p></p>}
+                </div>
+                <Button variant="primary" type="submit" className="mb-3">
                   Search
                 </Button>
+                {error !== "" ? <p>{error}</p> : <p></p>}
+                {goodCharacters.length === 3 ? (
+                  <p>Team good is full</p>
+                ) : (
+                  <p>Good team: {goodCharacters.length}</p>
+                )}
+                {badCharacters.length === 3 ? (
+                  <p>Team bad is full</p>
+                ) : (
+                  <p>Bad team:{badCharacters.length}</p>
+                )}
               </div>
-              <div className="text-center mt-3">
-                {isLoad ? <Spinner animation="border" /> : <p></p>}
-              </div>
+              <div className="text-center mt-3"></div>
             </Form>
           )}
         </Formik>
       </Modal.Body>
       <Modal.Footer>
-        {buttonClose({ isLoad, notFound, goodTeamFull, badTeamFull })}
+        <Button
+          variant="primary"
+          onClick={() => {
+            onHide();
+          }}
+        >
+          Close
+        </Button>
       </Modal.Footer>
     </Modal>
   );

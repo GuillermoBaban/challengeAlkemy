@@ -1,76 +1,16 @@
-import { useState } from "react";
 import { Row, ListGroup, Container } from "react-bootstrap";
-import { characterContext } from "../context/characterContext";
 import { Cards } from "./Cards";
+import { useSelector, useDispatch } from "react-redux";
+import { handleDelete } from "../store/slices/characters";
 
 export const Home = () => {
+  const {
+    rootReducer: { character },
+  } = useSelector((state) => state);
+
+  const dispatch = useDispatch();
+
   const maxTeamCount = 3;
-  const [goodCharacter, setGoodCharacter] = useState(0);
-  const [badCharacter, setBadCharacter] = useState(0);
-  const [characters, setCharacters] = useState([
-    { id: 0, value: "", sumPowers: 0, alignment: "", height: 0, weight: 0 },
-    { id: 1, value: "", sumPowers: 0, alignment: "", height: 0, weight: 0 },
-    { id: 2, value: "", sumPowers: 0, alignment: "", height: 0, weight: 0 },
-    { id: 3, value: "", sumPowers: 0, alignment: "", height: 0, weight: 0 },
-    { id: 4, value: "", sumPowers: 0, alignment: "", height: 0, weight: 0 },
-    { id: 5, value: "", sumPowers: 0, alignment: "", height: 0, weight: 0 },
-  ]);
-
-  const handleFetchResult = (id, result) => {
-    let sum = 0;
-    let objP = result.data.results[0].powerstats;
-    const { height } = result.data.results[0].appearance;
-    const { weight } = result.data.results[0].appearance;
-
-    const characterIndex = characters.findIndex(
-      (character) => character.id === id
-    );
-    if (characterIndex === -1) {
-      return console.error("index not found");
-    }
-
-    const newState = [...characters];
-    newState[characterIndex].value = result;
-
-    //sum PomerStats
-    for (const [, value] of Object.entries(objP)) {
-      if (value !== "null") sum += parseInt(value);
-    }
-    newState[characterIndex].sumPowers = sum;
-
-    // height and weight
-    newState[characterIndex].height = parseInt(height[1].replace(/\D/g, ""));
-    newState[characterIndex].weight = parseInt(weight[1].replace(/\D/g, ""));
-
-    //Alignment
-    const alignment = result.data.results[0].biography.alignment;
-    alignment === "good"
-      ? setGoodCharacter(goodCharacter + 1)
-      : setBadCharacter(badCharacter + 1);
-    newState[characterIndex].alignment = alignment;
-
-    setCharacters(newState);
-  };
-
-  const handleDelete = (id) => {
-    const characterIndex = characters.findIndex(
-      (character) => character.id === id
-    );
-    if (characterIndex === -1) {
-      return console.error("index not found");
-    }
-
-    const newState = [...characters];
-    newState[characterIndex].value.data.results[0].biography.alignment ===
-    "good"
-      ? setGoodCharacter(goodCharacter - 1)
-      : setBadCharacter(badCharacter - 1);
-    newState[characterIndex].value = "";
-    newState[characterIndex].height = 0;
-    newState[characterIndex].weight = 0;
-
-    setCharacters(newState);
-  };
 
   const statAccumulator = (characters) => {
     const arrStats = [];
@@ -85,7 +25,7 @@ export const Home = () => {
 
     characters.forEach((character) => {
       if (character.value) {
-        const { powerstats } = character.value.data.results[0];
+        const { powerstats } = character.value;
         sumI += parseInt(powerstats.intelligence);
         sumS += parseInt(powerstats.strength);
         sumSp += parseInt(powerstats.speed);
@@ -131,11 +71,11 @@ export const Home = () => {
     return (sumW / maxTeamCount).toFixed(2);
   };
 
-  const goodCharacters = characters.filter(
+  const goodCharacters = character.filter(
     (character) => character.alignment === "good"
   );
 
-  const badCharacters = characters.filter(
+  const badCharacters = character.filter(
     (character) => character.alignment === "bad"
   );
 
@@ -186,19 +126,17 @@ export const Home = () => {
           </div>
         )}
       </div>
-      <characterContext.Provider value={{ goodCharacter, badCharacter }}>
-        <Row xs={1} md={3} className="g-4">
-          {characters.map((card, index) => (
-            <Cards
-              key={index}
-              value={card.value}
-              sumPower={card.sumPowers}
-              onFetchResult={(result) => handleFetchResult(card.id, result)}
-              onDelete={() => handleDelete(card.id)}
-            />
-          ))}
-        </Row>
-      </characterContext.Provider>
+      <Row xs={1} md={3} className="g-4">
+        {character.map((card, index) => (
+          <Cards
+            key={index}
+            value={card.value}
+            sumPower={card.sumPowers}
+            cardId={card.id}
+            onDelete={() => dispatch(handleDelete(card.id))}
+          />
+        ))}
+      </Row>
     </Container>
   );
 };

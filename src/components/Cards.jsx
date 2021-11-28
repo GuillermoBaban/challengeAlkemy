@@ -4,12 +4,11 @@ import { ModalS } from "./ModalS";
 import { ModalDetail } from "./ModalDetail";
 import { v4 as uuid_v4 } from "uuid";
 
-export const Cards = ({ value, sumPower, onFetchResult, onDelete }) => {
+export const Cards = ({ value, sumPower, onDelete, cardId }) => {
   const [show, setShow] = useState(false);
   const [showDetail, setShowDetail] = useState(false);
   const handleShow = () => setShow(true);
   const handleDetail = () => setShowDetail(true);
-
   return (
     <>
       {value ? (
@@ -17,25 +16,23 @@ export const Cards = ({ value, sumPower, onFetchResult, onDelete }) => {
           <Col>
             <Card border="secondary">
               <Card.Body className="text-center">
-                <Card.Img variant="top" src={value.data.results[0].image.url} />
+                <Card.Img variant="top" src={value.image.url} />
                 <Card.Title className="mt-2 text-center">
-                  {value.data.results[0].name}
+                  {value.name}
                 </Card.Title>
                 <div>
-                  {Object.entries(value.data.results[0].powerstats).map(
-                    ([key, powers]) => (
-                      <ListGroup key={uuid_v4()}>
-                        <ListGroup.Item className="d-flex justify-content-between align-items-start">
-                          <div className="ms-2 me-auto">
-                            <div className="fw-bold">{key}</div>
-                          </div>
-                          <Badge bg="secondary" pill>
-                            {powers !== "null" ? powers : "unknow"}
-                          </Badge>
-                        </ListGroup.Item>
-                      </ListGroup>
-                    )
-                  )}
+                  {Object.entries(value.powerstats).map(([key, powers]) => (
+                    <ListGroup key={uuid_v4()}>
+                      <ListGroup.Item className="d-flex justify-content-between align-items-start">
+                        <div className="ms-2 me-auto">
+                          <div className="fw-bold">{key}</div>
+                        </div>
+                        <Badge bg="secondary" pill>
+                          {powers !== "null" ? powers : "unknow"}
+                        </Badge>
+                      </ListGroup.Item>
+                    </ListGroup>
+                  ))}
                 </div>
                 <div className="d-flex justify-content-evenly">
                   <Button className="mt-3" variant="primary" onClick={onDelete}>
@@ -52,11 +49,7 @@ export const Cards = ({ value, sumPower, onFetchResult, onDelete }) => {
               </Modal.Footer>
             </Card>
           </Col>
-          <ModalS
-            show={show}
-            onHide={() => setShow(false)}
-            onFetchResult={onFetchResult}
-          />
+          <ModalS show={show} onHide={() => setShow(false)} cardId={cardId} />
           <ModalDetail
             show={showDetail}
             onHide={() => setShowDetail(false)}
@@ -67,19 +60,14 @@ export const Cards = ({ value, sumPower, onFetchResult, onDelete }) => {
         <>
           <Col>
             <Card border="secondary">
-              <Card.Body>
-                <Card.Title></Card.Title>
-                <Button className="mt-3" variant="primary" onClick={handleShow}>
+              <Card.Body className="d-flex justify-content-center">
+                <Button variant="primary" onClick={handleShow}>
                   Add Character
                 </Button>
               </Card.Body>
             </Card>
           </Col>
-          <ModalS
-            show={show}
-            onHide={() => setShow(false)}
-            onFetchResult={onFetchResult}
-          />
+          <ModalS show={show} onHide={() => setShow(false)} cardId={cardId} />
         </>
       )}
     </>
