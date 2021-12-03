@@ -32,9 +32,7 @@ export const ModalS = ({ show, onHide, cardId }) => {
 
   return (
     <Modal show={show} onHide={onHide}>
-      <Modal.Header closeButton>
-        <Modal.Title>Holis</Modal.Title>
-      </Modal.Header>
+      <Modal.Header closeButton></Modal.Header>
       <Modal.Body>
         <Formik
           initialValues={{

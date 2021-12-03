@@ -80,63 +80,73 @@ export const Home = () => {
   );
 
   return (
-    <Container>
-      <h4 className="text-center my-4">
-        The team must be made up of three heroes and three villains
-      </h4>
-      <div className="d-flex justify-content-around mb-3">
-        {goodCharacters.length === maxTeamCount ? (
-          <ListGroup className="w-25 text-center">
-            <h4>The first team</h4>
-            <ListGroup.Item>
-              Type teams: {statAccumulator(goodCharacters)}
-            </ListGroup.Item>
-            <ListGroup.Item>
-              The average height is: {averageH(goodCharacters)}
-            </ListGroup.Item>
-            <ListGroup.Item>
-              The average weight is: {averageW(goodCharacters)}
-            </ListGroup.Item>
-          </ListGroup>
-        ) : (
-          <div className="text-center">
-            <p>
-              choose three heroes or three villains to see the type of equipment
-            </p>
-          </div>
-        )}
-        {badCharacters.length === maxTeamCount ? (
-          <ListGroup className="w-25 text-center">
-            <h4>The second team</h4>
-            <ListGroup.Item>
-              Type teams: {statAccumulator(badCharacters)}
-            </ListGroup.Item>
-            <ListGroup.Item>
-              The avarage height is: {averageH(badCharacters)}
-            </ListGroup.Item>
-            <ListGroup.Item>
-              The avarage weight is: {averageW(badCharacters)}
-            </ListGroup.Item>
-          </ListGroup>
-        ) : (
-          <div className="text-center">
-            <p>
-              choose three heroes or three villains to see the type of equipment
-            </p>
-          </div>
-        )}
-      </div>
-      <Row xs={1} md={3} className="g-4">
-        {character.map((card, index) => (
-          <Cards
-            key={index}
-            value={card.value}
-            sumPower={card.sumPowers}
-            cardId={card.id}
-            onDelete={() => dispatch(handleDelete(card.id))}
-          />
-        ))}
-      </Row>
-    </Container>
+    <>
+      <Container>
+        <h4 className="text-center my-4 text-white">
+          The team must be made up of three heroes and three villains
+        </h4>
+        <div className="d-flex justify-content-around mb-3">
+          {goodCharacters.length === maxTeamCount ? (
+            <ListGroup className="w-25 text-center">
+              <ListGroup.Item className="bg-dark border-white text-white">
+                <h4 className="text-white">The first team</h4>
+              </ListGroup.Item>
+              <ListGroup.Item className="bg-dark border-white text-white">
+                Type teams: {statAccumulator(goodCharacters)}
+              </ListGroup.Item>
+              <ListGroup.Item className="bg-dark border-white text-white">
+                The average height is: {averageH(goodCharacters)} Cm
+              </ListGroup.Item>
+              <ListGroup.Item className="bg-dark border-white text-white">
+                The average weight is: {averageW(goodCharacters)} Kg
+              </ListGroup.Item>
+            </ListGroup>
+          ) : (
+            <div className="text-center text-white">
+              <p>
+                choose three heroes or three villains to see the type of
+                equipment
+              </p>
+            </div>
+          )}
+          {badCharacters.length === maxTeamCount ? (
+            <ListGroup className="w-25 text-center">
+              <ListGroup.Item className="bg-dark border-white text-white">
+                <h4 className="text-white">The second team</h4>
+              </ListGroup.Item>
+              <ListGroup.Item className="bg-dark border-white text-white">
+                Type teams: {statAccumulator(badCharacters)}
+              </ListGroup.Item>
+              <ListGroup.Item className="bg-dark border-white text-white">
+                The avarage height is: {averageH(badCharacters)} Cm
+              </ListGroup.Item>
+              <ListGroup.Item className="bg-dark border-white text-white">
+                The avarage weight is: {averageW(badCharacters)} Kg
+              </ListGroup.Item>
+            </ListGroup>
+          ) : (
+            <div className="text-center text-white">
+              <p>
+                choose three heroes or three villains to see the type of
+                equipment
+              </p>
+            </div>
+          )}
+        </div>
+      </Container>
+      <Container>
+        <Row xs={1} md={3} className="g-4">
+          {character.map((card, index) => (
+            <Cards
+              key={index}
+              value={card.value}
+              sumPower={card.sumPowers}
+              cardId={card.id}
+              onDelete={() => dispatch(handleDelete(card.id))}
+            />
+          ))}
+        </Row>
+      </Container>
+    </>
   );
 };

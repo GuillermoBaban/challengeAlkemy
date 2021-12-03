@@ -73,7 +73,6 @@ export const fetchCharacters =
     axios
       .get(`https://www.superheroapi.com/api.php/${API_KEY}/search/${name}`)
       .then((response) => {
-        console.log(response);
         dispatch(setSpinner(false));
         if (
           response.data.response === "success" &&

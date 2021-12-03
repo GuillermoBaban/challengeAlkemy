@@ -14,7 +14,7 @@ export const Cards = ({ value, sumPower, onDelete, cardId }) => {
       {value ? (
         <>
           <Col>
-            <Card border="secondary">
+            <Card border="secondary" className="bg-dark">
               <Card.Body className="text-center">
                 <Card.Img variant="top" src={value.image.url} />
                 <Card.Title className="mt-2 text-center">
@@ -23,9 +23,9 @@ export const Cards = ({ value, sumPower, onDelete, cardId }) => {
                 <div>
                   {Object.entries(value.powerstats).map(([key, powers]) => (
                     <ListGroup key={uuid_v4()}>
-                      <ListGroup.Item className="d-flex justify-content-between align-items-start">
+                      <ListGroup.Item className="d-flex justify-content-between align-items-start bg-dark border-white mb-2">
                         <div className="ms-2 me-auto">
-                          <div className="fw-bold">{key}</div>
+                          <div className="fw-bold text-white">{key}</div>
                         </div>
                         <Badge bg="secondary" pill>
                           {powers !== "null" ? powers : "unknow"}
@@ -44,8 +44,8 @@ export const Cards = ({ value, sumPower, onDelete, cardId }) => {
                 </div>
               </Card.Body>
               <Modal.Footer className="d-block text-center">
-                <span>PowerStats Total:</span>
-                <span>{sumPower}</span>
+                <span className="text-white">PowerStats Total:</span>
+                <span className="text-white">{sumPower}</span>
               </Modal.Footer>
             </Card>
           </Col>
@@ -59,9 +59,9 @@ export const Cards = ({ value, sumPower, onDelete, cardId }) => {
       ) : (
         <>
           <Col>
-            <Card border="secondary">
+            <Card border="secondary bg-dark">
               <Card.Body className="d-flex justify-content-center">
-                <Button variant="primary" onClick={handleShow}>
+                <Button variant="light" onClick={handleShow}>
                   Add Character
                 </Button>
               </Card.Body>
