@@ -80,14 +80,12 @@ export const fetchCharacters =
           response.data.results[0].biography.alignment === "good"
         ) {
           dispatch(setCharactersList({ data: response.data, cardId }));
-          dispatch(setError(""));
         } else if (
           response.data.response === "success" &&
           !fullBadCharacter &&
           response.data.results[0].biography.alignment === "bad"
         ) {
           dispatch(setCharactersList({ data: response.data, cardId }));
-          dispatch(setError(""));
         }
         if (response.data.response === "error") {
           dispatch(setError(response.data.error));

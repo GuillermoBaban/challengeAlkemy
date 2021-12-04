@@ -1,5 +1,4 @@
 import axios from "axios";
-const API_KEY = process.env.REACT_APP_API_KEY;
 
 export async function passAndEmail(values) {
   try {
@@ -18,12 +17,4 @@ export async function passAndEmail(values) {
   } catch (e) {
     return e.response.status;
   }
-}
-
-export async function getMethod(name) {
-  return axios
-    .get(`https://www.superheroapi.com/api.php/${API_KEY}/search/${name}`)
-    .then((response) => {
-      return response;
-    });
 }

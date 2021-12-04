@@ -53,9 +53,9 @@ export const ModalS = ({ show, onHide, cardId }) => {
             } else if (badCharacters.length === 3) {
               fullBadCharacter = true;
             }
-            dispatch(
-              fetchCharacters(name, cardId, fullGoodCharacter, fullBadCharacter)
-            );
+            // dispatch(
+            //   fetchCharacters(name, cardId, fullGoodCharacter, fullBadCharacter)
+            // );
           }}
         >
           {({
