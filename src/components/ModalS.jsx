@@ -8,18 +8,6 @@ export const ModalS = ({ show, onHide, cardId }) => {
     rootReducer: { character },
   } = useSelector((state) => state);
 
-  const {
-    rootReducer: { spinner },
-  } = useSelector((state) => state);
-
-  const {
-    rootReducer: { error },
-  } = useSelector((state) => state);
-
-  let fullGoodCharacter = false;
-
-  let fullBadCharacter = false;
-
   const goodCharacters = character.filter(
     (character) => character.alignment === "good" && character.value !== ""
   );
@@ -48,14 +36,7 @@ export const ModalS = ({ show, onHide, cardId }) => {
             return errors;
           }}
           onSubmit={({ name }) => {
-            if (goodCharacters.length === 3) {
-              fullGoodCharacter = true;
-            } else if (badCharacters.length === 3) {
-              fullBadCharacter = true;
-            }
-            // dispatch(
-            //   fetchCharacters(name, cardId, fullGoodCharacter, fullBadCharacter)
-            // );
+            dispatch(fetchCharacters(name, cardId));
           }}
         >
           {({
@@ -90,12 +71,12 @@ export const ModalS = ({ show, onHide, cardId }) => {
               </Form.Group>
               <div className="text-center">
                 <div className="mb-3">
-                  {spinner ? <Spinner animation="border" /> : <p></p>}
+                  {"" ? <Spinner animation="border" /> : <p></p>}
                 </div>
                 <Button variant="primary" type="submit" className="mb-3">
                   Search
                 </Button>
-                {error !== "" ? <p>{error}</p> : <p></p>}
+                {"" !== "" ? <p>{}</p> : <p></p>}
                 {goodCharacters.length === 3 ? (
                   <p>Team good is full</p>
                 ) : (

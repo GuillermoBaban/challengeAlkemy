@@ -1,17 +1,46 @@
-import axios from "axios";
+import Axios from "axios";
+import { apiCallBegan } from "../actions/actions";
 
 const api = ({ dispatch }) => {
   return (next) => {
     return async (action) => {
-      console.log("tola");
+      if (action.type !== apiCallBegan.type) return next(action);
+
+      const {
+        baseURL,
+        apiKey,
+        url,
+        params,
+        headers = {},
+        method,
+        data,
+        customData = {},
+        onStart,
+        onSuccess,
+        onError,
+      } = action.payload;
+
+      if (onStart) {
+        dispatch({ type: onStart });
+      }
+      next(action);
       try {
-        const response = await axios.request({
-          baseURL:
-            "https://www.superheroapi.com/api.php/10224815768208941/search/batman",
+        const response = await Axios.request({
+          url,
+          baseURL: `${baseURL}${apiKey || ""}`,
+          params,
+          method,
+          data,
+          headers,
         });
-        dispatch(response.data);
+        if (onSuccess) {
+          dispatch({
+            type: onSuccess,
+            payload: { ...response.data, ...customData },
+          });
+        }
       } catch (err) {
-        console.log(err);
+        dispatch({ type: onError });
       }
     };
   };

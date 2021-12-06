@@ -6,5 +6,8 @@ export default configureStore({
   reducer: {
     rootReducer: character,
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(api),
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }).concat(api),
 });

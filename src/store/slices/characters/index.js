@@ -1,12 +1,13 @@
-import axios from "axios";
 import { createSlice } from "@reduxjs/toolkit";
 import { combineReducers } from "redux";
+import { apiCallBegan } from "../../actions/actions";
 
 const API_KEY = process.env.REACT_APP_API_KEY;
 
 export const charactersSlice = createSlice({
   name: "character",
   initialState: [
+    //Estado de Loading
     { id: 0, value: "", sumPowers: 0, alignment: "", height: 0, weight: 0 },
     { id: 1, value: "", sumPowers: 0, alignment: "", height: 0, weight: 0 },
     { id: 2, value: "", sumPowers: 0, alignment: "", height: 0, weight: 0 },
@@ -15,29 +16,35 @@ export const charactersSlice = createSlice({
     { id: 5, value: "", sumPowers: 0, alignment: "", height: 0, weight: 0 },
   ],
   reducers: {
-    setCharactersList: (state, action) => {
-      const { cardId, data } = action.payload;
-      state[cardId].value = data.results[0];
-      data.results[0].biography.alignment === "good"
-        ? (state[cardId].alignment = "good")
-        : (state[cardId].alignment = "bad");
-      state[cardId].height = parseInt(
-        data.results[0].appearance.height[1].replace(/\D/g, "")
-      );
-      state[cardId].weight = parseInt(
-        data.results[0].appearance.weight[1].replace(/\D/g, "")
-      );
-      let sum = 0;
-      let objP = data.results[0].powerstats;
-      for (const [, value] of Object.entries(objP)) {
-        if (value !== "null") sum += parseInt(value);
-      }
-      state[cardId].sumPowers = sum;
+    charactersListRequested: (state, action) => {
+      // const loading = action.payload
     },
 
     deleteCharacters: (state, action) => {
       state[action.payload].value = "";
     },
+    charactersListRecived: (state, action) => {
+      //recorer el obj en busca de buenos y malos
+      //en caso de que sea uno de los dos sea full no guardar
+      const { cardId, results } = action.payload;
+      state[cardId].value = results[0];
+      results[0].biography.alignment === "good"
+        ? (state[cardId].alignment = "good")
+        : (state[cardId].alignment = "bad");
+      state[cardId].height = parseInt(
+        results[0].appearance.height[1].replace(/\D/g, "")
+      );
+      state[cardId].weight = parseInt(
+        results[0].appearance.weight[1].replace(/\D/g, "")
+      );
+      let sum = 0;
+      let objP = results[0].powerstats;
+      for (const [, value] of Object.entries(objP)) {
+        if (value !== "null") sum += parseInt(value);
+      }
+      state[cardId].sumPowers = sum;
+    },
+    characterListFailed: (state, action) => {},
   },
 });
 
@@ -57,9 +64,12 @@ export const errorSlice = createSlice({
   },
 });
 
-export const { setCharactersList, deleteCharacters } = charactersSlice.actions;
-export const { setSpinner } = spinnerSlice.actions;
-export const { setError } = errorSlice.actions;
+export const {
+  charactersListRequested,
+  deleteCharacters,
+  charactersListRecived,
+  characterListFailed,
+} = charactersSlice.actions;
 
 export default combineReducers({
   character: charactersSlice.reducer,
@@ -67,31 +77,19 @@ export default combineReducers({
   error: errorSlice.reducer,
 });
 
-export const fetchCharacters =
-  (name, cardId, fullGoodCharacter, fullBadCharacter) => (dispatch) => {
-    dispatch(setSpinner(true));
-    axios
-      .get(`https://www.superheroapi.com/api.php/${API_KEY}/search/${name}`)
-      .then((response) => {
-        dispatch(setSpinner(false));
-        if (
-          response.data.response === "success" &&
-          !fullGoodCharacter &&
-          response.data.results[0].biography.alignment === "good"
-        ) {
-          dispatch(setCharactersList({ data: response.data, cardId }));
-        } else if (
-          response.data.response === "success" &&
-          !fullBadCharacter &&
-          response.data.results[0].biography.alignment === "bad"
-        ) {
-          dispatch(setCharactersList({ data: response.data, cardId }));
-        }
-        if (response.data.response === "error") {
-          dispatch(setError(response.data.error));
-        }
-      });
-  };
+export const fetchCharacters = (name, cardId) => (dispatch) => {
+  return dispatch(
+    apiCallBegan({
+      baseURL: "https://www.superheroapi.com/api.php/",
+      apiKey: API_KEY,
+      url: `/search/${name}`,
+      customData: { name, cardId },
+      onStart: charactersListRequested.type,
+      onSuccess: charactersListRecived.type,
+      onError: characterListFailed.type,
+    })
+  );
+};
 
 export const handleDelete = (id) => (dispatch) => {
   dispatch(deleteCharacters(id));
